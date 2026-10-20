@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>Speak · Main Office</title>
+<style>
+  :root {
+    --bg: #F6F7F9; --surface: #FFFFFF; --ink: #1A1D21; --muted: #5E6570;
+    --hair: #E4E7EB; --hair-strong: #CDD2D8; --wash: #F0F2F5;
+    --accent: #0F6B5C; --accent-hover: #0C5A4D; --accent-press: #09483E; --accent-tint: #E7F1EE;
+    --danger: #C2352B; --danger-tint: #FCEBEA;
+    --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --radius: 8px; --radius-sm: 6px;
+    --ease: cubic-bezier(.2, .7, .2, 1);
+    --focus: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui);
+    font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  [hidden] { display: none !important; }
+  main { display: flex; flex-direction: column; gap: 10px; min-height: 100%; padding: 14px 16px; max-width: 640px; margin: 0 auto; }
+  .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .brand { font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+  h1 { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; }
+  .row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  button { font: inherit; }
+  button:focus-visible, textarea:focus-visible { outline: none; box-shadow: var(--focus); }
+  .mic {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 56px; min-width: 132px; padding: 0 26px; border-radius: var(--radius); cursor: pointer;
+    background: var(--accent-tint); border: 1px solid #BFD5CE; color: var(--accent-press);
+    font-size: 15px; font-weight: 600;
+    transition: background-color .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease);
+  }
+  .mic:hover { background: #DCEBE6; border-color: var(--accent); }
+  .mic svg { width: 22px; height: 22px; }
+  .mic.is-on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .mic.is-on:hover { background: var(--accent-hover); }
+  .mic[disabled] { cursor: not-allowed; opacity: .5; }
+  .status { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; font-weight: 500; }
+  .status.is-on { color: var(--accent-press); }
+  .level { display: none; align-items: flex-end; gap: 3px; height: 20px; }
+  .status.is-on .level { display: inline-flex; }
+  .level i { display: block; width: 4px; height: 6px; background: var(--accent); border-radius: 1px; animation: level .9s var(--ease) infinite alternate; }
+  .level i:nth-child(2) { animation-delay: .15s; } .level i:nth-child(3) { animation-delay: .3s; }
+  .level i:nth-child(4) { animation-delay: .45s; } .level i:nth-child(5) { animation-delay: .6s; }
+  @keyframes level { from { height: 4px; } to { height: 20px; } }
+  .box { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 92px; background: var(--surface); border: 1px solid var(--hair-strong); border-radius: var(--radius); }
+  .box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  textarea {
+    flex: 1 1 auto; width: 100%; min-height: 60px; resize: none; border: 0; border-radius: var(--radius);
+    padding: 12px 14px 4px; background: transparent; color: var(--ink); font: inherit; font-size: 16px; line-height: 1.5;
+  }
+  textarea:focus-visible { box-shadow: none; }
+  textarea::placeholder { color: var(--muted); }
+  .interim { min-height: 22px; padding: 0 14px 8px; color: var(--muted); font-size: 15px; font-style: italic; }
+  .problem {
+    margin: 0; padding: 10px 12px; border-radius: var(--radius-sm); background: var(--wash);
+    border-left: 3px solid var(--ink); font-size: 14px;
+  }
+  .problem.is-danger { background: var(--danger-tint); border-left-color: var(--danger); }
+  .problem p { margin: 0; }
+  .problem p + p { margin-top: 4px; color: var(--muted); }
+  .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .actions .spacer { flex: 1 1 auto; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; padding: 0 20px; border-radius: var(--radius-sm); border: 1px solid transparent;
+    font-weight: 500; font-size: 14px; cursor: pointer;
+    transition: background-color .16s var(--ease), border-color .16s var(--ease), color .16s var(--ease);
+  }
+  .btn[disabled] { cursor: not-allowed; opacity: .5; }
+  .btn-primary { background: var(--accent); color: #fff; font-weight: 600; }
+  .btn-primary:hover:not([disabled]) { background: var(--accent-hover); }
+  .btn-primary:active:not([disabled]) { background: var(--accent-press); }
+  .btn-secondary { background: var(--surface); border-color: var(--hair-strong); color: var(--ink); }
+  .btn-secondary:hover:not([disabled]) { border-color: var(--muted); background: var(--wash); }
+  .btn-quiet { background: transparent; color: var(--muted); }
+  .btn-quiet:hover:not([disabled]) { background: var(--wash); color: var(--ink); }
+  .hint { margin: 0; color: var(--muted); font-size: 12px; }
+  kbd { font: inherit; font-size: 12px; padding: 0 4px; border: 1px solid var(--hair-strong); border-radius: 4px; background: var(--surface); }
+  .fallback { display: flex; flex-direction: column; gap: 10px; }
+  .fallback p { margin: 0; }
+  .fallback textarea { min-height: 96px; border: 1px solid var(--hair-strong); padding: 10px 12px; }
+  .refused { margin: auto 0; text-align: center; color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .level i { height: 12px; }
+  }
+</style>
+</head>
+<body>
+<main id="app">
+  <p class="refused" id="refused" hidden>This page only works with Main Office.</p>
+
+  <section id="speak" hidden aria-labelledby="field-label">
+    <div class="head">
+      <h1 id="field-label">Speak</h1>
+      <span class="brand">Main Office</span>
+    </div>
+  </section>
+
+  <div class="row" id="controls" hidden>
+    <button class="mic" id="mic" type="button" aria-pressed="false" aria-describedby="status-text">
+      <span id="mic-icon" aria-hidden="true"></span><span id="mic-label">Start</span>
+    </button>
+    <span class="status" id="status" role="status" aria-live="polite">
+      <span class="level" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span id="status-text">Press Start, then talk.</span>
+    </span>
+  </div>
+
+  <div class="problem" id="problem" role="alert" hidden></div>
+
+  <div class="box" id="box" hidden>
+    <textarea id="text" aria-label="Transcript" placeholder="Words appear here. Edit before inserting."></textarea>
+    <div class="interim" id="interim" aria-hidden="true"></div>
+  </div>
+
+  <div class="actions" id="actions" hidden>
+    <button class="btn btn-primary" id="insert" type="button" disabled aria-keyshortcuts="Control+Enter Meta+Enter">Insert</button>
+    <button class="btn btn-secondary" id="again" type="button">Start over</button>
+    <span class="spacer"></span>
+    <button class="btn btn-quiet" id="cancel" type="button">Cancel</button>
+  </div>
+  <p class="hint" id="hint" hidden><kbd id="mod">Ctrl</kbd> + <kbd>Enter</kbd> inserts.</p>
+
+  <section class="fallback" id="fallback" hidden aria-labelledby="fallback-title">
+    <p id="fallback-title"><strong>Copy the text.</strong> Paste it into the box in Main Office.</p>
+    <textarea id="fallback-text" readonly aria-label="Text to copy"></textarea>
+    <div class="actions">
+      <button class="btn btn-primary" id="copy" type="button">Copy</button>
+      <span class="sr" id="copy-status" role="status" aria-live="polite"></span>
+      <span class="spacer"></span>
+      <button class="btn btn-quiet" id="close" type="button">Close</button>
+    </div>
+  </section>
+</main>
+<script>
+/*
+ * Main Office: Speak window.
+ * A top-level page (so the browser allows the microphone) that Main Office opens as a small
+ * pop-up. The browser's built-in speech recognition turns speech into text; "Insert" sends the
+ * text back to the Main Office page that opened this window, with window.opener.postMessage, to
+ * that page's origin only. Nothing is stored (no cookies, no localStorage) and this page makes no
+ * network requests of its own (see the Content-Security-Policy above).
+ *
+ * URL: ?o=<opener origin>&f=<field key>&label=<field label>&lang=<en-US>
+ * Message sent:     { type: 'mo-dictation', field, text, phrases }  -> window.opener, targetOrigin o
+ * Message expected: { type: 'mo-dictation-ack', field }             <- from origin o, then close
+ */
+(function () {
+  'use strict';
+
+  // ------------------------------------------------------------ pure checks
+  /** The opener origin Main Office can run on: Apps Script's user-content frames, script.google.com, or a local preview. */
+  function allowedOrigin(o) {
+    if (typeof o !== 'string') return false;
+    if (/^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.googleusercontent\.com$/.test(o)) return true;
+    if (o === 'https://script.google.com') return true;
+    return /^http:\/\/localhost:\d{1,5}$/.test(o);
+  }
+  function cleanField(f) { return typeof f === 'string' && /^[A-Za-z0-9_.-]{1,60}$/.test(f) ? f : ''; }
+  function cleanLang(l) { return typeof l === 'string' && /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8}){0,2}$/.test(l) ? l : 'en-US'; }
+  function cleanLabel(s) { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > 60 ? s.slice(0, 60) + '…' : s; }
+
+  var params = new URLSearchParams(window.location.search);
+  var ORIGIN = params.get('o') || '';
+  var FIELD = cleanField(params.get('f'));
+  var LANG = cleanLang(params.get('lang'));
+  var LABEL = cleanLabel(params.get('label'));
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  if (!allowedOrigin(ORIGIN) || !FIELD) {
+    $('refused').hidden = false;
+    document.title = 'Main Office';
+    return;
+  }
+
+  // ------------------------------------------------------------ platform tip (same wording as Main Office)
+  function platform() {
+    var p = '', ua = '';
+    try { p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || ''; } catch (e) { p = ''; }
+    try { ua = navigator.userAgent || ''; } catch (e2) { ua = ''; }
+    var t = (p + ' ' + ua).toLowerCase();
+    if (/cros|chrome os|chromeos/.test(t)) return 'chromeos';
+    if (/mac/.test(t) && !/iphone|ipad/.test(t)) return 'mac';
+    if (/win/.test(t)) return 'windows';
+    return 'other';
+  }
+  var DICTATION = {
+    mac: 'Press 🌐 (or Fn) twice in the box in Main Office, then talk.',
+    windows: 'Press Windows + H in the box in Main Office, then talk.',
+    chromeos: 'Press Search + D in the box in Main Office, then talk.',
+    other: 'Use the computer’s voice typing (dictation) in the box in Main Office.'
+  };
+  var PLATFORM = platform();
+  var TIP = 'Computer dictation also works: ' + DICTATION[PLATFORM];
+
+  var ERRORS = {
+    'not-allowed': 'Microphone blocked. Allow it from the icon at the left of the address bar, then press Start.',
+    'service-not-allowed': 'Speech is turned off for this browser or account.',
+    'no-speech': 'No speech heard. Press Start and talk closer to the microphone.',
+    'audio-capture': 'No microphone found.',
+    'network': 'Speech needs a stable internet connection.',
+    'language-not-supported': 'Speech isn’t available in this language here.',
+    'unsupported': 'This browser has no built-in speech typing. Chrome works best.',
+    'start': 'The microphone didn’t start. Press Start again.'
+  };
+
+  var ICON_MIC = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="2.5" width="6" height="10" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 9.5a5.5 5.5 0 0 0 11 0M10 15v2.5M7 17.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  var ICON_STOP = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5.5" y="5.5" width="9" height="9" rx="1.5" fill="currentColor"/></svg>';
+
+  // ------------------------------------------------------------ page
+  document.title = (LABEL ? LABEL + ' · ' : '') + 'Speak · Main Office';
+  $('field-label').textContent = LABEL || 'Speak';
+  ['speak', 'controls', 'box', 'actions', 'hint'].forEach(function (id) { $(id).hidden = false; });
+  $('mod').textContent = PLATFORM === 'mac' ? '⌘' : 'Ctrl';
+  $('mic').setAttribute('aria-label', 'Start speaking' + (LABEL ? ': ' + LABEL : ''));
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  var text = $('text');
+  var state = { rec: null, on: false, phrases: [], spoken: '', sent: false, ackTimer: null };
+
+  function setOn(on) {
+    state.on = on;
+    var mic = $('mic');
+    mic.classList.toggle('is-on', on);
+    mic.setAttribute('aria-pressed', on ? 'true' : 'false');
+    mic.setAttribute('aria-label', (on ? 'Stop speaking' : 'Start speaking') + (LABEL ? ': ' + LABEL : ''));
+    $('mic-label').textContent = on ? 'Stop' : 'Start';
+    $('mic-icon').innerHTML = on ? ICON_STOP : ICON_MIC;
+    $('status').classList.toggle('is-on', on);
+    $('status-text').textContent = on ? 'Listening. Press Stop when done.' : (text.value.trim() ? 'Stopped.' : 'Press Start, then talk.');
+  }
+
+  function showProblem(code) {
+    if (code === 'aborted') return;
+    var p = $('problem');
+    p.textContent = '';
+    p.className = 'problem' + (code === 'no-speech' ? '' : ' is-danger');
+    var a = document.createElement('p'); a.textContent = ERRORS[code] || 'The microphone stopped. Press Start to try again.';
+    var b = document.createElement('p'); b.textContent = TIP;
+    p.appendChild(a);
+    if (code !== 'no-speech') p.appendChild(b);
+    p.hidden = false;
+  }
+
+  function paintInsert() { $('insert').disabled = !text.value.trim(); }
+
+  /** Final words land at the end of the box, a space between phrases, the first letter capitalised. */
+  function addFinal(words) {
+    words = String(words || '').replace(/\s+/g, ' ').trim();
+    if (!words) return;
+    state.phrases.push(words);
+    var v = text.value;
+    if (!v.trim() || /[.!?]\s*$/.test(v)) words = words.charAt(0).toUpperCase() + words.slice(1);
+    text.value = v + (v && !/\s$/.test(v) ? ' ' : '') + words;
+    state.spoken = text.value;
+    text.scrollTop = text.scrollHeight;
+    paintInsert();
+  }
+
+  function start() {
+    if (!SR) { showProblem('unsupported'); return; }
+    $('problem').hidden = true;
+    var rec;
+    try {
+      rec = new SR();
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = LANG;
+    } catch (e) { showProblem('start'); return; }
+    rec.onresult = function (e) {
+      var pending = '';
+      for (var i = e.resultIndex; i < e.results.length; i++) {
+        var r = e.results[i];
+        if (r.isFinal) addFinal(r[0].transcript); else pending += r[0].transcript;
+      }
+      $('interim').textContent = pending.trim();
+    };
+    rec.onerror = function (e) { showProblem(e && e.error); };
+    rec.onend = function () {
+      if (state.rec === rec) state.rec = null;
+      $('interim').textContent = '';
+      setOn(false);
+    };
+    try { rec.start(); } catch (e2) { showProblem('start'); return; }
+    state.rec = rec;
+    setOn(true);
+  }
+
+  function stop() {
+    if (state.rec) { try { state.rec.stop(); } catch (e) { /* already stopped */ } }
+  }
+
+  function abort() {
+    if (state.rec) { try { state.rec.abort(); } catch (e) { /* already stopped */ } }
+    state.rec = null;
+    $('interim').textContent = '';
+    setOn(false);
+  }
+
+  function startOver() {
+    abort();
+    text.value = '';
+    state.phrases = [];
+    state.spoken = '';
+    paintInsert();
+    start();
+  }
+
+  /** Phrases (one per pause) keep "next"/"then" steps apart; an edited box goes as one phrase. */
+  function payload() {
+    var t = text.value.trim();
+    var phrases = text.value === state.spoken && state.phrases.length ? state.phrases.slice() : [t];
+    return { type: 'mo-dictation', field: FIELD, text: t, phrases: phrases };
+  }
+
+  function insert() {
+    if (state.sent) return;
+    var p = payload();
+    if (!p.text) return;
+    stop();
+    var opener = null;
+    try { opener = window.opener && !window.opener.closed ? window.opener : null; } catch (e) { opener = null; }
+    if (!opener) { fallback(p.text); return; }
+    try { opener.postMessage(p, ORIGIN); } catch (e2) { fallback(p.text); return; }
+    state.sent = true;
+    $('insert').disabled = true;
+    $('status-text').textContent = 'Inserting…';
+    // Main Office answers with an ack; without one (a different page, or the link to it was cut), offer Copy.
+    state.ackTimer = setTimeout(function () { state.sent = false; fallback(p.text); }, 2000);
+  }
+
+  window.addEventListener('message', function (e) {
+    if (e.origin !== ORIGIN || !state.sent) return;
+    var d = e.data;
+    if (!d || typeof d !== 'object' || d.type !== 'mo-dictation-ack' || d.field !== FIELD) return;
+    clearTimeout(state.ackTimer);
+    window.close();
+  });
+
+  function fallback(t) {
+    abort();
+    ['controls', 'problem', 'box', 'actions', 'hint'].forEach(function (id) { $(id).hidden = true; });
+    $('fallback-text').value = t;
+    $('fallback').hidden = false;
+    $('fallback-text').focus();
+    $('fallback-text').select();
+  }
+
+  function copy() {
+    var ta = $('fallback-text');
+    var done = function () { $('copy').textContent = 'Copied'; $('copy-status').textContent = 'Copied.'; };
+    var legacy = function () {
+      ta.focus(); ta.select();
+      try { if (document.execCommand('copy')) done(); } catch (e) { /* the text stays selected for Cmd/Ctrl+C */ }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(done, legacy);
+    else legacy();
+  }
+
+  $('mic').addEventListener('click', function () { if (state.on) stop(); else start(); });
+  $('insert').addEventListener('click', insert);
+  $('again').addEventListener('click', startOver);
+  $('cancel').addEventListener('click', function () { abort(); window.close(); });
+  $('copy').addEventListener('click', copy);
+  $('close').addEventListener('click', function () { window.close(); });
+  text.addEventListener('input', paintInsert);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && $('fallback').hidden) { e.preventDefault(); insert(); }
+  });
+
+  setOn(false);
+  paintInsert();
+  if (!SR) showProblem('unsupported');
+  else start(); // auto-start; the browser may ask for the microphone the first time
+}());
+</script>
+</body>
+</html>
